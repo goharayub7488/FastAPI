@@ -12,10 +12,12 @@ BASE_DIR=Path(__file__).resolve().parent.parent
 DATA_FILE=BASE_DIR/'data'/'doctor.json'
 
 def load_data():
-    with open(DATA_FILE,'r') as f:
-        data=json.load(f)
-        return data
-
+    try:
+        with open(DATA_FILE,'r') as f:
+            data=json.load(f)
+            return data
+    except(FileNotFoundError,json.JSONDecodeError):
+        return {}
 def save_data(data):
     with open(DATA_FILE,'w') as f:
         json.dump(data,f)
@@ -30,7 +32,7 @@ def create_doc(doctor:Doctor):
 
     save_data(data)
 
-    return JSONResponse(status_code=200,content="Doctor created successfully")
+    return JSONResponse(status_code=200,content={'message':"Doctor created successfully"})
 
 @router.put('/edit/{doctor_id}')
 def update_doctor(doctor_id:str,UpdatedDoctor:Update_doctor):
@@ -48,6 +50,7 @@ def update_doctor(doctor_id:str,UpdatedDoctor:Update_doctor):
     data[doctor_id]=existing_doctor_info
 
     save_data(data)
+    return JSONResponse(status_code=200,content={'message':'Doctor updated successfully'})
 
 @router.get('/view')
 def view():

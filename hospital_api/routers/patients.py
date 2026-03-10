@@ -33,7 +33,7 @@ def create_patient(patient:Patient):
     data[patient.id]=patient.model_dump(exclude=['id'])
     save_data(data)
 
-    return JSONResponse(status_code=200,content="patient successfully created")
+    return JSONResponse(status_code=200,content={'message':"patient successfully created"})
 
 @router.get('/view')
 def view():
@@ -52,7 +52,7 @@ def get_patient(patient_id: str=FastAPIPath(...,description='Enter patient_id to
 @router.get('/sort')
 def sort_patients(sort_by:str = Query(...,description="sort patient order by weight ,height , bmi"),
                   order:str=Query(...,description="Sort patients in asc and desc order")):
-    data=load_data()
+    data=load_patient()
     valid_field=['weight','height','bmi']
 
     if sort_by not in valid_field:
@@ -61,7 +61,7 @@ def sort_patients(sort_by:str = Query(...,description="sort patient order by wei
     if order not in ['asc','desc']:
         raise HTTPException(status_code=404,detail="Ivalide order choose asc or desc")
 
-    sort_order = True if 'desc' else False
+    sort_order = True if order == 'desc' else False
     sorted_data=sorted(data.values(),key=lambda x: x.get(sort_by,0),reverse=sort_order)
     
     return sorted_data
@@ -87,7 +87,7 @@ def update_patient(patient_id:str,PatientUpdate:Update_patient):
     data[patient_id]=existing_patient_info
     save_data(data)
 
-    return JSONResponse(status_code=202,content="patient updated successfully ")
+    return JSONResponse(status_code=202,content={'message':"patient updated successfully "})
 
 
 @router.delete('/delete/{patient_id}')
@@ -98,4 +98,4 @@ def delete_patient(patient_id:str=FastAPIPath(...,description="Enter the patient
         raise HTTPException(status_code=404,detail="Invalid patient id, This pathient doesn't exist")
     del (data[patient_id])
     save_data(data)
-    return JSONResponse(status_code=200,content="Patient deleted successfully")
+    return JSONResponse(status_code=200,content={'message':"Patient deleted successfully"})
