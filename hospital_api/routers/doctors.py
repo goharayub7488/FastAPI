@@ -1,4 +1,4 @@
-from fastapi import APIRouter,HTTPException
+from fastapi import APIRouter,HTTPException,Query
 from fastapi import Path as APIPath
 from fastapi.responses import JSONResponse
 
@@ -64,3 +64,29 @@ def view_doc(doctor_id:str=APIPath(...,description="Enter the doctor id to get p
     if doctor_id not in data:
         raise HTTPException(status_code=404,detail="Invalid doctor id")
     return data[doctor_id]
+
+@router.get('/sort')
+def get_doc(sort_by:str=Query(...,description="you can sort doctors by speclization & experience"),
+            order:str=Query(...,description="you can preform sorting in asc & desc")):
+    data=load_data()
+    valid_field=['speclization','years_of_experience']
+    if sort_by not in valid_field:
+        raise HTTPException(status_code=404,detail="Invalid field ")
+    if order not in ['asc','desc']:
+        raise HTTPException(status_code=404,detail="Invalid order")
+    
+
+    sort_order=True if order == 'desc' else False
+    sorted_data=sorted(data.values(),key=lambda x: x.get(sort_by,0),reverse=sort_order)
+
+    return sorted_data
+
+@router.delete('/delete{doctor_id}')
+def delete_doc(doctor_id:str=APIPath(...,description="Enter doctor id to delete",example=['doc-1'])):
+    data=load_data()
+    if doctor_id not in data:
+        raise HTTPException(status_code=404,detail="Doctor does not exist")
+    del(data[doctor_id])
+    save_data(data)
+
+    return JSONResponse(status_code=200,content={'message':'Doctor deleted successfully'})

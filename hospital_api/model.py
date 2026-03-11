@@ -30,8 +30,10 @@ class Doctor(BaseModel):
     id:Annotated[str,Field(...,description="Enter doctor id ",examples=['doc-1'])]
     name:Annotated[str,Field(...,description="Enter Doctor name")]
     speclization:Annotated[str,Field(...,description="Enter the doctor specliety")]
+    years_of_experience:Annotated[float,Field(...,description="Practicing experience")]
 
 class Update_doctor(BaseModel):
 
     name:Annotated[Optional[str],Field(default=None)]
     speclization:Annotated[Optional[str],Field(default=None)]
+    years_of_experience:Annotated[Optional[float],Field(default=None)]
