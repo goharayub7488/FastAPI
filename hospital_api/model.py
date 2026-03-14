@@ -1,5 +1,6 @@
 from pydantic import BaseModel , Field ,computed_field
 from typing import Annotated , Literal ,Optional
+from datetime import date ,time
 class Patient(BaseModel):
 
     id: Annotated[str,Field(...,description="Enter the patient id",examples=["p1"])]
@@ -37,3 +38,11 @@ class Update_doctor(BaseModel):
     name:Annotated[Optional[str],Field(default=None)]
     speclization:Annotated[Optional[str],Field(default=None)]
     years_of_experience:Annotated[Optional[float],Field(default=None)]
+
+class Appointment(BaseModel):
+    id:Annotated[str,Field(...,description="Enter appointment id ",examples=['App-1'])]
+    patient_id:Annotated[str,Field(...,description="Enter patient id",examples=['p1'])]
+    doctor_id:Annotated[str,Field(...,description="Enter the doctor id to who patient appointed",examples=['doc-1'])]
+    appoint_date:date
+    appoint_time:time
+    reason:str
