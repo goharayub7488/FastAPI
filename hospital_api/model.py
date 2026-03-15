@@ -46,3 +46,10 @@ class Appointment(BaseModel):
     appoint_date:date
     appoint_time:time
     reason:str
+
+class UpdateAppointment(BaseModel):
+    patient_id:Annotated[Optional[str],Field(default=None)]
+    doctor_id:Annotated[Optional[str],Field(default=None)]
+    appoint_date:Annotated[Optional[date],Field(default=None)]
+    appoint_time:Annotated[Optional[time],Field(default=None)]
+    reason:Annotated[Optional[str],Field(default=None)]

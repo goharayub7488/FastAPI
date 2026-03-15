@@ -1,5 +1,6 @@
-from fastapi import APIRouter , HTTPException
-from hospital_api.model import Appointment
+from fastapi import APIRouter , HTTPException , Query
+from fastapi import Path as APIPath
+from hospital_api.model import Appointment , UpdateAppointment
 from fastapi.responses import JSONResponse
 from pathlib import Path
 import json
@@ -40,3 +41,30 @@ def create_appointment(appointment:Appointment):
     save_data(DATA_FILE,appointment_data)
 
     return JSONResponse(status_code=200,content={'message':'appointment created successfully'})
+
+@router.put('/edit/{appoint_id}')
+def update_appoint(appoint_id:str,appointUpdate:UpdateAppointment):
+    data=load_data(DATA_FILE)
+    if appoint_id not in data:
+        raise HTTPException(status_code=404,detail="Invalid Appointment id")
+    existing_appoint_info=data[appoint_id]
+    update_appoint_info=appointUpdate.model_dump(exclude_unset=True,mode='json')
+
+    for key,value in update_appoint_info.items():
+        existing_appoint_info[key]=value
+    data[appoint_id]=existing_appoint_info
+    save_data(DATA_FILE,data)
+
+    return JSONResponse(status_code=200,content={'message':'Appointment updated successfully'})
+
+@router.get('/view')
+def view_appointment():
+    data=load_data(DATA_FILE)
+    return data
+
+@router.get('/view/{appoint_id}')
+def view_single_appoint(appoint_id:str = APIPath(...,description="Enter the appointment id to get particular appointment",examples=['App-1'])):
+    data =load_data(DATA_FILE)
+    if appoint_id not in data:
+        raise HTTPException(status_code=404,detail="Appointment does not exist")
+    return data[appoint_id]
